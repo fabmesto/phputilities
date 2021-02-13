@@ -2,8 +2,6 @@
 
 namespace fab;
 
-use Symfony\Polyfill\Intl\Idn\Info;
-
 class functions
 {
     public static function params_from_get($params)
@@ -501,7 +499,10 @@ class functions
     public static function url_abs($url, $site = '')
     {
         if ($site == '') {
-            $site = get_site_url() . '/';
+            if (function_exists('get_site_url')) {
+                // wordpress
+                $site = \get_site_url() . '/';
+            }
         }
 
         if (strpos($url, 'http') === 0) {
@@ -636,10 +637,14 @@ class functions
 
     public static function filedir_to_url($filedir)
     {
-        $upload_dir = wp_upload_dir();
-        $base_upload_dir = $upload_dir['basedir'];
-        $base_upload_url = $upload_dir['baseurl'];
-        return str_replace($base_upload_dir, $base_upload_url, $filedir);
+        if (function_exists('wp_upload_dir')) {
+            // wordpress
+            $upload_dir = \wp_upload_dir();
+            $base_upload_dir = $upload_dir['basedir'];
+            $base_upload_url = $upload_dir['baseurl'];
+            return str_replace($base_upload_dir, $base_upload_url, $filedir);
+        }
+        return $filedir;
     }
 
     public static function extension_file($file_path)
