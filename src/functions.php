@@ -107,6 +107,7 @@ class functions
         return $ret;
     }
 
+    /* --- comp old code */
     public static function html_input_edit($label, $input, $value, $classes = "", $attributes = "")
     {
         return \fab\bootstrap::html_input_edit($label, $input, $value, $classes, $attributes);
@@ -156,6 +157,7 @@ class functions
     {
         return \fab\bootstrap::html_select_search($label, $input, $options, $classes, $attributes);
     }
+    /* --- comp old code */
 
     public static function get_to_input_hidden($exclude_keys = array())
     {
