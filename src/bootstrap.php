@@ -9,7 +9,7 @@ class bootstrap
         $html = '';
         $html .= '<div class="form-group">';
         $html .= '<label>' . $label . '</label>';
-        $html .= '<input type="text" class="form-control ' . $classes . '" name="' . $input . '" value="' . $value . '" placeholder="' . sanitize_html_class(strip_tags($label)) . '" ' . $attributes . '>';
+        $html .= '<input type="text" class="form-control ' . $classes . '" name="' . $input . '" value="' . $value . '" placeholder="' . self::sanitize_html_class(strip_tags($label)) . '" ' . $attributes . '>';
         $html .= '</div>';
         return $html;
     }
@@ -19,7 +19,7 @@ class bootstrap
         $html = '';
         $html .= '<div class="form-group">';
         $html .= '<label>' . $label . '</label>';
-        $html .= '<input type="number" class="form-control ' . $classes . '" name="' . $input . '" value="' . $value . '" placeholder="' . sanitize_html_class(strip_tags($label)) . '" ' . $attributes . '>';
+        $html .= '<input type="number" class="form-control ' . $classes . '" name="' . $input . '" value="' . $value . '" placeholder="' . self::sanitize_html_class(strip_tags($label)) . '" ' . $attributes . '>';
         $html .= '</div>';
         return $html;
     }
@@ -29,7 +29,7 @@ class bootstrap
         $html = '';
         $html .= '<div class="form-group">';
         $html .= '<label>' . $label . '</label>';
-        $html .= '<textarea class="form-control ' . $classes . '" name="' . $input . '" placeholder="' . sanitize_html_class(strip_tags($label)) . '" ' . $attributes . '>' . $value . '</textarea>';
+        $html .= '<textarea class="form-control ' . $classes . '" name="' . $input . '" placeholder="' . self::sanitize_html_class(strip_tags($label)) . '" ' . $attributes . '>' . $value . '</textarea>';
         $html .= '</div>';
         return $html;
     }
@@ -113,7 +113,7 @@ class bootstrap
         $html = '';
         $html .= '<div class="form-group">';
         $html .= '<label class="sr-only">' . $label . '</label>';
-        $html .= '<input type="text" class="form-control ' . $classes . '" name="' . $input . '" value="' . $value . '" placeholder="' . sanitize_html_class(strip_tags($label)) . '" ' . $attributes . '>';
+        $html .= '<input type="text" class="form-control ' . $classes . '" name="' . $input . '" value="' . $value . '" placeholder="' . self::sanitize_html_class(strip_tags($label)) . '" ' . $attributes . '>';
         $html .= '</div>';
         return $html;
     }
@@ -128,5 +128,20 @@ class bootstrap
         $html .= '</select>';
         $html .= '</div>';
         return $html;
+    }
+
+    private static function sanitize_html_class($class, $fallback = '')
+    {
+        if (function_exists('sanitize_html_class')) {
+            // wordpress
+            return \sanitize_html_class($class, $fallback);
+        }
+        // Strip out any %-encoded octets.
+        $sanitized = preg_replace('|%[a-fA-F0-9][a-fA-F0-9]|', '', $class);
+
+        // Limit to A-Z, a-z, 0-9, '_', '-'.
+        $sanitized = preg_replace('/[^A-Za-z0-9_-]/', '', $sanitized);
+
+        return $sanitized;
     }
 }
