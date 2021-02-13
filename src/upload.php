@@ -9,8 +9,8 @@ class upload
         // Include the upload handler class
         require_once(dirname(__FILE__) . '/fineuploader/UploadHandler.php');
 
-        if (class_exists('fineuploader\UploadHandler')) {
-            $uploader = new fineuploader\UploadHandler();
+        if (class_exists('\fab\fineuploader\UploadHandler')) {
+            $uploader = new \fab\fineuploader\UploadHandler();
 
             // Specify the list of valid extensions, ex. array("jpeg", "xml", "bmp")
             $uploader->allowedExtensions = $allowedExtensions; // all files types allowed by default
