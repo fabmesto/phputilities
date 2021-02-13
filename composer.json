@@ -1,6 +1,6 @@
 {
-    "name": "fabmesto/utilities",
-    "description": "utilities",
+    "name": "fabmesto/phputilities",
+    "description": "php utilities",
     "type": "library",
     "license": "MIT",
     "authors": [
