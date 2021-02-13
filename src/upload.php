@@ -104,7 +104,9 @@ class upload
             }
         } else {
             if (class_exists('WP_Error') and function_exists('__')) {
-                return new \WP_Error('broke', __("Classe non trovata", "UploadHandler"));
+                return new \WP_Error('broke', __('Classe non trovata in ' . dirname(__FILE__) . '/fineuploader/UploadHandler.php', 'UploadHandler'));
+            } else {
+                return 'Classe non trovata in ' . dirname(__FILE__) . '/fineuploader/UploadHandler.php';
             }
         }
     }
