@@ -17,20 +17,22 @@ class date
                     }
                 }
             } else {
-                $his = ($only_date == false ? ' H:i:s' : '');
-                $seps = array('-', '.', '\'');
-                foreach ($seps as $sep) {
-                    if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $date)) {
-                        return $date->format('d-m-Y' . $his);
-                    }
-                    if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd', $date)) {
-                        return $date->format('d-m-Y');
-                    }
-                    if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $his, $date)) {
-                        return $date->format('Y-m-d' . $his);
-                    }
-                    if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y', $date)) {
-                        return $date->format('Y-m-d');
+                if (!self::is_zero_date($date)) {
+                    $his = ($only_date == false ? ' H:i:s' : '');
+                    $seps = array('-', '.', '\'');
+                    foreach ($seps as $sep) {
+                        if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $date)) {
+                            return $date->format('d-m-Y' . $his);
+                        }
+                        if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd', $date)) {
+                            return $date->format('d-m-Y');
+                        }
+                        if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $his, $date)) {
+                            return $date->format('Y-m-d' . $his);
+                        }
+                        if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y', $date)) {
+                            return $date->format('Y-m-d');
+                        }
                     }
                 }
             }
@@ -80,23 +82,24 @@ class date
 
     public static function date_format_to($date, $format, $only_date = false)
     {
-        $his = ($only_date == false ? ' H:i:s' : '');
-        $seps = array('-', '.', '\'');
-        foreach ($seps as $sep) {
-            if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $date)) {
-                return $date->format($format . $his);
-            }
-            if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd', $date)) {
-                return $date->format($format);
-            }
-            if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $his, $date)) {
-                return $date->format($format  . $his);
-            }
-            if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y', $date)) {
-                return $date->format($format);
+        if (!self::is_zero_date($date)) {
+            $his = ($only_date == false ? ' H:i:s' : '');
+            $seps = array('-', '.', '\'');
+            foreach ($seps as $sep) {
+                if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $date)) {
+                    return $date->format($format . $his);
+                }
+                if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd', $date)) {
+                    return $date->format($format);
+                }
+                if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $his, $date)) {
+                    return $date->format($format  . $his);
+                }
+                if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y', $date)) {
+                    return $date->format($format);
+                }
             }
         }
-
         return $date;
     }
 
@@ -113,49 +116,52 @@ class date
         date_default_timezone_set("Europe/Rome");
 
         $time_ago = strtotime($datetime);
-        $time_now = time();
-        $now = new \DateTime('@' . $time_now);
-        $ago = new \DateTime('@' . $time_ago);
-        $diff = $now->diff($ago);
+        if ($time_ago) {
+            $time_now = time();
+            $now = new \DateTime('@' . $time_now);
+            $ago = new \DateTime('@' . $time_ago);
+            $diff = $now->diff($ago);
 
-        $diff->w = floor($diff->d / 7);
-        $diff->d -= $diff->w * 7;
+            $diff->w = floor($diff->d / 7);
+            $diff->d -= $diff->w * 7;
 
-        $string = array(
-            'y' => array('singolare' => 'anno', 'plurale' => 'anni'),
-            'm' => array('singolare' => 'mese', 'plurale' => 'mesi'),
-            'w' => array('singolare' => 'settimana', 'plurale' => 'settimane'),
-            'd' => array('singolare' => 'giorno', 'plurale' => 'giorni'),
-            'h' => array('singolare' => 'ora', 'plurale' => 'ore'),
-            'i' => array('singolare' => 'minuto', 'plurale' => 'minuti'),
-            's' => array('singolare' => 'secondo', 'plurale' => 'secondi'),
-        );
+            $string = array(
+                'y' => array('singolare' => 'anno', 'plurale' => 'anni'),
+                'm' => array('singolare' => 'mese', 'plurale' => 'mesi'),
+                'w' => array('singolare' => 'settimana', 'plurale' => 'settimane'),
+                'd' => array('singolare' => 'giorno', 'plurale' => 'giorni'),
+                'h' => array('singolare' => 'ora', 'plurale' => 'ore'),
+                'i' => array('singolare' => 'minuto', 'plurale' => 'minuti'),
+                's' => array('singolare' => 'secondo', 'plurale' => 'secondi'),
+            );
 
-        foreach ($string as $k => &$v) {
-            if ($diff->$k) {
-                if ($diff->$k > 1) {
-                    //plurale
-                    $v = $diff->$k . ' ' . $v['plurale'];
+            foreach ($string as $k => &$v) {
+                if ($diff->$k) {
+                    if ($diff->$k > 1) {
+                        //plurale
+                        $v = $diff->$k . ' ' . $v['plurale'];
+                    } else {
+                        //singolare
+                        $v = $diff->$k . ' ' . $v['singolare'];
+                    }
                 } else {
-                    //singolare
-                    $v = $diff->$k . ' ' . $v['singolare'];
+                    unset($string[$k]);
                 }
-            } else {
-                unset($string[$k]);
             }
-        }
 
-        //print_r($string);
-        if (!$full) {
-            $string = array_slice($string, 0, 1);
-        }
+            //print_r($string);
+            if (!$full) {
+                $string = array_slice($string, 0, 1);
+            }
 
-        if ($time_now > $time_ago) {
-            $ret = $string ? implode(', ', $string) . ' fa' : 'proprio adesso';
-        } else {
-            $ret = $string ? 'tra ' . implode(', ', $string) . '' : 'proprio adesso';
+            if ($time_now > $time_ago) {
+                $ret = $string ? implode(', ', $string) . ' fa' : 'proprio adesso';
+            } else {
+                $ret = $string ? 'tra ' . implode(', ', $string) . '' : 'proprio adesso';
+            }
+            return $ret;
         }
-        return $ret;
+        return $datetime;
     }
 
     public static function calendar_array($year)
@@ -167,5 +173,11 @@ class date
             $calendar[strftime("%m", $loop = strtotime("+$i day", $start))][strftime("%d", $loop)] = strftime("%Y-%m-%d", $loop);
         }
         return $calendar;
+    }
+
+    public static function is_zero_date($datetime)
+    {
+        $zero_dates = array('0000-00-00', '00-00-0000', '0000-00-00 00:00:00', '00-00-0000 00:00:00');
+        return (\in_array($datetime, $zero_dates));
     }
 }
