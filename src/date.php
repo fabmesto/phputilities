@@ -5,11 +5,11 @@ namespace fab;
 class date
 {
 
-    public static function date_to_invert($date, $only_date = false)
+    public static function date_to_invert($source_date, $only_date = false)
     {
-        if (!empty($date)) {
-            if (is_array($date)) {
-                foreach ($date as $Key => $Value) {
+        if (!empty($source_date)) {
+            if (is_array($source_date)) {
+                foreach ($source_date as $Key => $Value) {
                     if (!empty($Value)) {
                         if ((strpos($Key, "data_")) === 0 || (strpos($Key, "date_")) === 0) {
                             $date[$Key] = self::date_to_invert($Value, $only_date);
@@ -17,27 +17,27 @@ class date
                     }
                 }
             } else {
-                if (!self::is_zero_date($date)) {
+                if (!self::is_zero_date($source_date)) {
                     $his = ($only_date == false ? ' H:i:s' : '');
                     $seps = array('-', '.', '\'');
                     foreach ($seps as $sep) {
-                        if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $date)) {
+                        if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $source_date)) {
                             return $date->format('d-m-Y' . $his);
                         }
-                        if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd', $date)) {
+                        if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd', $source_date)) {
                             return $date->format('d-m-Y');
                         }
-                        if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $his, $date)) {
+                        if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $his, $source_date)) {
                             return $date->format('Y-m-d' . $his);
                         }
-                        if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y', $date)) {
+                        if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y', $source_date)) {
                             return $date->format('Y-m-d');
                         }
                     }
                 }
             }
         }
-        return $date;
+        return $source_date;
     }
 
     public static function date_to_sql($date, $only_date = false)
@@ -80,27 +80,27 @@ class date
         return $date;
     }
 
-    public static function date_format_to($date, $format, $only_date = false)
+    public static function date_format_to($source_date, $format, $only_date = false)
     {
-        if (!self::is_zero_date($date)) {
+        if (!self::is_zero_date($source_date)) {
             $his = ($only_date == false ? ' H:i:s' : '');
             $seps = array('-', '.', '\'');
             foreach ($seps as $sep) {
-                if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $date)) {
+                if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $source_date)) {
                     return $date->format($format . $his);
                 }
-                if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd', $date)) {
+                if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd', $source_date)) {
                     return $date->format($format);
                 }
-                if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $his, $date)) {
+                if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $his, $source_date)) {
                     return $date->format($format  . $his);
                 }
-                if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y', $date)) {
+                if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y', $source_date)) {
                     return $date->format($format);
                 }
             }
         }
-        return $date;
+        return $source_date;
     }
 
     public static function date_format_from_to($date, $from_format, $to_format)
