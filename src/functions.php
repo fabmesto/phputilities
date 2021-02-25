@@ -511,4 +511,13 @@ class functions
         echo 'console.log(' . json_encode($data) . ')';
         echo '</script>';
     }
+
+    public static function wp_admin_email($subject, $message)
+    {
+        if (function_exists('wp_mail')) {
+            $headers = array('Content-Type: text/html; charset=UTF-8');
+            $admin_email = get_option('admin_email');
+            return wp_mail($admin_email, $subject, $message, $headers);
+        }
+    }
 }
