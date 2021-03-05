@@ -34,6 +34,11 @@ class date
                             return $date->format('Y-m-d');
                         }
                     }
+                } else {
+                    // BUG
+                    // se la data è zero
+                    // non funziona DateTime::createFromFormat
+                    return self::invert_zero_date($source_date);
                 }
             }
         }
@@ -98,6 +103,12 @@ class date
                 if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y', $source_date)) {
                     return $date->format($format);
                 }
+            }
+        } else {
+            if (strpos($format, 'Y') === 0) {
+                return '0000-00-00';
+            } else {
+                return '00-00-0000';
             }
         }
         return $source_date;
@@ -179,5 +190,17 @@ class date
     {
         $zero_dates = array('0000-00-00', '00-00-0000', '0000-00-00 00:00:00', '00-00-0000 00:00:00');
         return (\in_array($datetime, $zero_dates));
+    }
+
+    public static function invert_zero_date($source_date)
+    {
+        // BUG
+        // se la data è zero
+        // non funziona DateTime::createFromFormat
+        if (strpos($source_date, '0000') === 0) {
+            return '00-00-0000';
+        } else {
+            return '0000-00-00';
+        }
     }
 }
