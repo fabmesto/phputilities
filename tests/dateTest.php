@@ -79,4 +79,12 @@ final class dateTest extends TestCase
             date::date_to_sql('00-00-0000')
         );
     }
+
+    public function testDateSqlZeroInvertWithHIS(): void
+    {
+        $this->assertEquals(
+            '0000-00-00',
+            date::date_to_sql('00-00-0000 00:00:00')
+        );
+    }
 }
