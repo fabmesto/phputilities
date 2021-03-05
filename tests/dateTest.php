@@ -7,7 +7,7 @@ use \fab\date;
 
 final class dateTest extends TestCase
 {
-    
+
     public function testCanBeCreated(): void
     {
         $this->assertInstanceOf(
@@ -58,7 +58,21 @@ final class dateTest extends TestCase
             date::date_to_ita('00-00-0000')
         );
     }
+    public function testDateItaZeroInvert(): void
+    {
+        $this->assertEquals(
+            '00-00-0000',
+            date::date_to_ita('0000-00-00')
+        );
+    }
     public function testDateSqlZero(): void
+    {
+        $this->assertEquals(
+            '0000-00-00',
+            date::date_to_sql('0000-00-00')
+        );
+    }
+    public function testDateSqlZeroInvert(): void
     {
         $this->assertEquals(
             '0000-00-00',
