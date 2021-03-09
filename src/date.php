@@ -190,8 +190,11 @@ class date
 
     public static function is_zero_date($datetime)
     {
-        $zero_dates = array('0000-00-00', '00-00-0000', '0000-00-00 00:00:00', '00-00-0000 00:00:00');
-        return (\in_array($datetime, $zero_dates));
+        if (trim($datetime) !== '') {
+            $zero_dates = array('0000-00-00', '00-00-0000', '0000-00-00 00:00:00', '00-00-0000 00:00:00');
+            return (\in_array($datetime, $zero_dates));
+        }
+        return true;
     }
 
     public static function invert_zero_date($source_date)
