@@ -53,7 +53,7 @@ class date
             if (is_array($date)) {
                 foreach ($date as $Key => $Value) {
                     if (!empty($Value)) {
-                        if ((strpos($Key, "data_")) === 0 || (strpos($Key, "date_")) === 0) {
+                        if (is_string($Key) && ((strpos($Key, "data_")) === 0 || (strpos($Key, "date_")) === 0)) {
                             $date[$Key] = self::date_to_sql($Value, $only_date);
                         }
                     }
@@ -74,7 +74,7 @@ class date
                         if (is_array($Value)) {
                             $date[$Key] = self::date_to_ita($Value, $only_date);
                         } else {
-                            if ((strpos($Key, "data_")) === 0 || (strpos($Key, "date_")) === 0) {
+                            if (is_string($Key) && ((strpos($Key, "data_")) === 0 || (strpos($Key, "date_")) === 0)) {
                                 $date[$Key] = self::date_to_ita($Value, $only_date);
                             }
                         }
