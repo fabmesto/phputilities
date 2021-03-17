@@ -44,6 +44,15 @@ final class dateTest extends TestCase
             date::date_to_invert('20-01-2020')
         );
     }
+
+    public function testDateToInvertWithSlash(): void
+    {
+        $this->assertEquals(
+            '2020-01-20',
+            date::date_to_invert('20/01/2020')
+        );
+    }
+
     public function testDateToInvertZero(): void
     {
         $this->assertEquals(
@@ -85,6 +94,23 @@ final class dateTest extends TestCase
         $this->assertEquals(
             '0000-00-00',
             date::date_to_sql('00-00-0000 00:00:00')
+        );
+    }
+
+
+    public function testDateSqlWithSlash(): void
+    {
+        $this->assertEquals(
+            '2021-01-21',
+            date::date_to_sql('21/01/2021')
+        );
+    }
+
+    public function testFormatWithSlash(): void
+    {
+        $this->assertEquals(
+            '2021-01-12',
+            date::date_format_to('12/01/2021', 'Y-m-d')
         );
     }
 }

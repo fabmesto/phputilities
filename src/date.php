@@ -21,7 +21,7 @@ class date
             } else {
                 if (!self::is_zero_date($source_date)) {
                     $his = ($only_date == false ? ' H:i:s' : '');
-                    $seps = array('-', '.', '\'');
+                    $seps = array('-', '.', '/');
                     foreach ($seps as $sep) {
                         if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $source_date)) {
                             return $date->format('d-m-Y' . $his);
@@ -91,7 +91,7 @@ class date
     {
         if (!self::is_zero_date($source_date)) {
             $his = ($only_date == false ? ' H:i:s' : '');
-            $seps = array('-', '.', '\'');
+            $seps = array('-', '.', '/');
             foreach ($seps as $sep) {
                 if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $source_date)) {
                     return $date->format($format . $his);
