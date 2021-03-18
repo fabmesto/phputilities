@@ -89,28 +89,30 @@ class date
 
     public static function date_format_to($source_date, $format, $only_date = false)
     {
-        if (!self::is_zero_date($source_date)) {
-            $his = ($only_date == false ? ' H:i:s' : '');
-            $seps = array('-', '.', '/');
-            foreach ($seps as $sep) {
-                if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $source_date)) {
-                    return $date->format($format . $his);
+        if (is_string($source_date)) {
+            if (!self::is_zero_date($source_date)) {
+                $his = ($only_date == false ? ' H:i:s' : '');
+                $seps = array('-', '.', '/');
+                foreach ($seps as $sep) {
+                    if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $source_date)) {
+                        return $date->format($format . $his);
+                    }
+                    if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd', $source_date)) {
+                        return $date->format($format);
+                    }
+                    if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $his, $source_date)) {
+                        return $date->format($format  . $his);
+                    }
+                    if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y', $source_date)) {
+                        return $date->format($format);
+                    }
                 }
-                if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd', $source_date)) {
-                    return $date->format($format);
-                }
-                if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $his, $source_date)) {
-                    return $date->format($format  . $his);
-                }
-                if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y', $source_date)) {
-                    return $date->format($format);
-                }
-            }
-        } else {
-            if (strpos($format, 'Y') === 0) {
-                return '0000-00-00';
             } else {
-                return '00-00-0000';
+                if (strpos($format, 'Y') === 0) {
+                    return '0000-00-00';
+                } else {
+                    return '00-00-0000';
+                }
             }
         }
         return $source_date;
@@ -190,9 +192,13 @@ class date
 
     public static function is_zero_date($datetime)
     {
-        if (trim($datetime) !== '') {
-            $zero_dates = array('0000-00-00', '00-00-0000', '0000-00-00 00:00:00', '00-00-0000 00:00:00');
-            return (\in_array($datetime, $zero_dates));
+        if (is_string($datetime)) {
+            if (trim($datetime) !== '') {
+                $zero_dates = array('0000-00-00', '00-00-0000', '0000-00-00 00:00:00', '00-00-0000 00:00:00');
+                return (\in_array($datetime, $zero_dates));
+            }
+        } else {
+            return false;
         }
         return true;
     }
@@ -202,10 +208,14 @@ class date
         // BUG
         // se la data è zero
         // non funziona DateTime::createFromFormat
-        if (strpos($source_date, '0000') === 0) {
-            return '00-00-0000';
+        if (is_string($source_date)) {
+            if (strpos($source_date, '0000') === 0) {
+                return '00-00-0000';
+            } else {
+                return '0000-00-00';
+            }
         } else {
-            return '0000-00-00';
+            return $source_date;
         }
     }
 }
