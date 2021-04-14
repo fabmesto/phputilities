@@ -273,39 +273,45 @@ class functions
                 break;
             default:
                 if (is_array($value)) {
-                    $ret = "";
-                    foreach ($value as $row) {
-                        if (is_array($row)) {
-                            if ($show_html) {
-                                $ret .= '<div class="fab-col-details">';
-                            }
-
-                            $sep = '';
-                            foreach ($row as $k => $v) {
-                                if (!is_array($v)) {
-                                    if ($show_html) {
-                                        $ret .= $sep . '<b>' . self::clean_col_name($k) . '</b>: ' . self::clean_col_value($k, $v);
-                                    } else {
-                                        $ret .= $sep . '' . self::clean_col_name($k) . ': ' . self::clean_col_value($k, $v);
-                                    }
-                                    $sep = ' , ';
-                                }
-                            }
-                            if ($show_html) {
-                                $ret .= '</div>';
-                            }
-                        } else {
-                            if ($show_html) {
-                                $ret .= '<div>' . self::clean_col_value($name, $row) . '</div>';
-                            } else {
-                                $ret .= self::clean_col_value($name, $row);
-                            }
-                        }
-                    }
+                    $ret = self::html_array($name, $value, $show_html);
                 } else {
                     $ret = $value;
                 }
                 break;
+        }
+        return $ret;
+    }
+
+    public static function html_array($name, $value, $show_html = true)
+    {
+        $ret = "";
+        if ($show_html) {
+            $ret .= '<div class="fab-col-details" onclick="jQuery(this).toggleClass(\'fab-col-details\')">';
+        }
+        foreach ($value as $key => $row) {
+            if (is_array($row)) {
+
+                $sep = '';
+                foreach ($row as $k => $v) {
+                    if (!is_array($v)) {
+                        if ($show_html) {
+                            $ret .= $sep . '<b>' . self::clean_col_name($k) . '</b>: ' . self::clean_col_value($k, $v);
+                        } else {
+                            $ret .= $sep . '' . self::clean_col_name($k) . ': ' . self::clean_col_value($k, $v);
+                        }
+                        $sep = ' , ';
+                    }
+                }
+            } else {
+                if ($show_html) {
+                    $ret .= '<div><b>' .  self::clean_col_name($key)  . '</b>: ' . self::clean_col_value($name, $row) . '</div>';
+                } else {
+                    $ret .= self::clean_col_value($name, $row);
+                }
+            }
+        }
+        if ($show_html) {
+            $ret .= '</div>';
         }
         return $ret;
     }
