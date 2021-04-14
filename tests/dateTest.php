@@ -113,4 +113,20 @@ final class dateTest extends TestCase
             date::date_format_to('12/01/2021', 'Y-m-d')
         );
     }
+
+    public function test_date_to_sql_with_time(): void
+    {
+        $this->assertEquals(
+            '2021-01-12 10:24',
+            date::date_to_sql('12-01-2021 10:24')
+        );
+    }
+
+    public function test_date_to_ita_with_time(): void
+    {
+        $this->assertEquals(
+            '12-01-2021 10:24',
+            date::date_to_ita('2021-01-12 10:24')
+        );
+    }
 }

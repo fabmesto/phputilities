@@ -91,14 +91,21 @@ class date
     {
         if (is_string($source_date)) {
             if (!self::is_zero_date($source_date)) {
+                $hi = ($only_date == false ? ' H:i' : '');
                 $his = ($only_date == false ? ' H:i:s' : '');
                 $seps = array('-', '.', '/');
                 foreach ($seps as $sep) {
+                    if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $hi, $source_date)) {
+                        return $date->format($format . $hi);
+                    }
                     if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd' . $his, $source_date)) {
                         return $date->format($format . $his);
                     }
                     if ($date = \DateTime::createFromFormat('Y' . $sep . 'm' . $sep . 'd', $source_date)) {
                         return $date->format($format);
+                    }
+                    if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $hi, $source_date)) {
+                        return $date->format($format  . $hi);
                     }
                     if ($date = \DateTime::createFromFormat('d' . $sep . 'm' . $sep . 'Y' . $his, $source_date)) {
                         return $date->format($format  . $his);
