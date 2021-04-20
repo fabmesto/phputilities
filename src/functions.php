@@ -528,6 +528,17 @@ class functions
         echo '</script>';
     }
 
+    public static function html_environment_variable()
+    {
+        $current_url = "//{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
+
+        $html = '';
+        $html .= '<p>POST: ' . json_encode($_POST) . '</p>';
+        $html .= '<p>GET: ' . json_encode($_GET) . '</p>';
+        $html .= '<p>URL: ' . $current_url . '</p>';
+        return $html;
+    }
+
     public static function wp_admin_email($subject, $message)
     {
         if (function_exists('wp_mail')) {
