@@ -536,6 +536,7 @@ class functions
         $html .= '<p>POST: ' . json_encode($_POST) . '</p>';
         $html .= '<p>GET: ' . json_encode($_GET) . '</p>';
         $html .= '<p>URL: ' . $current_url . '</p>';
+        $html .= '<p>IP: ' . $_SERVER['REMOTE_ADDR'] . '</p>';
         return $html;
     }
 
