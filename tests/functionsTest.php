@@ -117,4 +117,46 @@ final class functionsTest extends TestCase
             $result
         );
     }
+
+    public function test_get_in_query_string()
+    {
+        $expected = 'c=3&d=4&';
+
+        $params = ['a', 'b'];
+        $_GET['a'] = 1;
+        $_GET['b'] = 2;
+        $_GET['c'] = 3;
+        $_GET['d'] = 4;
+        $result = functions::get_in_query_string($params);
+
+        $this->assertEquals(
+            $expected,
+            $result
+        );
+    }
+
+    public function test_split_comune_provincia()
+    {
+        $comune = 'Bari';
+        $provincia = 'Ba';
+        $expected = ['comune' => $comune, 'provincia' => $provincia];
+        $params = $comune . " (" . $provincia . ")";
+        $result = functions::split_comune_provincia($params);
+
+        $this->assertEquals(
+            $expected,
+            $result
+        );
+    }
+
+    public function test_value_by_key()
+    {
+        $array = ['a'=>1, 'b'=>2];
+        $key = 'b';
+        $result = functions::value_by_key($array, $key);
+        $this->assertEquals(
+            2,
+            $result
+        );
+    }
 }

@@ -208,8 +208,6 @@ class functions
         return $array;
     }
 
-
-
     public static function clean_col_name($name)
     {
         $name = str_replace('.', ' ', $name);
@@ -335,12 +333,7 @@ class functions
     {
         return \fab\date::nice_date($datetime, $full);
     }
-
-    public static function memory_get_usage($label = '')
-    {
-        echo "<div>" . $label . ' - ' . self::human_filesize(memory_get_usage(true)) . "</div>\n";
-    }
-
+    
     public static function csv_to_array($filename, $map = array(), $sep = ";")
     {
         $array = array();

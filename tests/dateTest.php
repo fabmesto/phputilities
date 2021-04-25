@@ -129,4 +129,20 @@ final class dateTest extends TestCase
             date::date_to_ita('2021-01-12 10:24')
         );
     }
+
+    public function test_date_to_sql_with_time_slash(): void
+    {
+        $this->assertEquals(
+            '2021-01-12 06:10',
+            date::date_to_sql('12/01/2021 6:10')
+        );
+    }
+
+    public function test_date_to_ita_with_time_slash(): void
+    {
+        $this->assertEquals(
+            '12-01-2021 07:03',
+            date::date_to_ita('2021/01/12 7:03')
+        );
+    }
 }
