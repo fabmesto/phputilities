@@ -57,6 +57,25 @@ class bootstrap
         return $html;
     }
 
+    public static function html_checkboxes_edit4($label, $input, $values = array(), $sels = array(), $classes = "", $id_prefix = "check_", $errors = '')
+    {
+        $html = '';
+        if (is_array($values) && count($values) > 0) {
+            $html .= '<div class="form-group-check ' . ($errors != '' ? 'is-invalid has-error' : '') . '">';
+            if ($label != '') $html .= '<label>' . $label . '</label>';
+            foreach ($values as $value => $text) {
+                $html .= '<div class="form-check ' . $classes . '">';
+                $html .= '<input type="hidden" name="' . $input . '[' . $value . ']" value="0" />';
+                $html .= '<input class="form-check-input" id="' . $id_prefix . $value . '" type="checkbox" name="' . $input . '[' . $value . ']" value="' . $value . '" ' . (in_array($value, $sels) ? 'checked' : '') . '>';
+                $html .= '<label class="form-check-label" for="' . $id_prefix . $value . '">' . $text . '</label>';
+                $html .= '</div>';
+            }
+            if ($errors != '') $html .= '<div class="invalid-feedback help-block">' . $errors . '</div>';
+            $html .= '</div>';
+        }
+        return $html;
+    }
+
     public static function html_radio_edit($label, $input, $values, $sel, $classes = "", $errors = '')
     {
         return self::_html_radio_edit($label, $input, $values, $sel, 'radio ' . $classes, $errors);
