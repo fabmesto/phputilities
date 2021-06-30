@@ -348,7 +348,7 @@ class functions
                             $array[$row][$map[$c]] = $data[$c];
                         } else {
                             if ($row == 0) {
-                                $map[$c] = $data[$c];
+                                $map[$c] = str_replace(PHP_EOL, '', $data[$c]);
                             }
                             //$array[$row][$c] = $data[$c];
                         }
