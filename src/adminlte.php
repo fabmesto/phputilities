@@ -2,8 +2,6 @@
 
 namespace fab;
 
-require FAB_BASE_PLUGIN_DIR_PATH . "vendor/autoload.php";
-
 class adminlte
 {
 

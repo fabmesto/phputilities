@@ -151,11 +151,39 @@ final class functionsTest extends TestCase
 
     public function test_value_by_key()
     {
-        $array = ['a'=>1, 'b'=>2];
+        $array = ['a' => 1, 'b' => 2];
         $key = 'b';
         $result = functions::value_by_key($array, $key);
         $this->assertEquals(
             2,
+            $result
+        );
+    }
+
+    public function test_csv_to_array()
+    {
+        $filepath = dirname(__FILE__) . '/assets/test.csv';
+        $result = functions::csv_to_array($filepath, [], ',');
+
+        $expected = [
+            1 => [
+                'id' => '1',
+                'nome' => 'nico',
+                'cognome' => 'rossi'
+            ],
+            2 => [
+                'id' => '2',
+                'nome' => 'fra',
+                'cognome' => 'bianchi'
+            ],
+            3 => [
+                'id' => '3',
+                'nome' => 'fab',
+                'cognome' => 'verdi'
+            ],
+        ];
+        $this->assertEquals(
+            $expected,
             $result
         );
     }
