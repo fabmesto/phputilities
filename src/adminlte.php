@@ -104,7 +104,7 @@ class adminlte
         $html = '';
         $html .= '
             <div class="box-profile">
-                <img class="profile-user-img img-responsive img-circle" src="' . $url_avatar_img . '" alt="' . $username . '">
+                <div class="text-center"><img class="profile-user-img img-responsive img-circle" src="' . $url_avatar_img . '" alt="' . $username . '"></div>
                 <h3 class="profile-username text-center">' . $username . '</h3>
                 <p class="text-muted text-center">' . $description . '</p>
             </div>';
