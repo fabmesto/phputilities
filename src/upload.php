@@ -4,6 +4,77 @@ namespace fab;
 
 class upload
 {
+    public static function uploader($fileNameWithoutExt = null, $destFolderRelativeToUploadDir = "files", $filekey = 'file', $overwrite = true)
+    {
+        $result = [];
+        $_full_mkdir_p_resp = self::_full_mkdir_p($destFolderRelativeToUploadDir);
+        if ($_full_mkdir_p_resp['code'] == 'error') {
+            $result["code"] = 'error';
+            $result["message"] = $_full_mkdir_p_resp['message'];
+            return $result;
+        } else {
+            $dest_upload_dir = $_full_mkdir_p_resp['dest_upload_dir'];
+            $base_upload_dir = $_full_mkdir_p_resp['base_upload_dir'];
+            $base_upload_url = $_full_mkdir_p_resp['base_upload_url'];
+        }
+
+        $uploadfile = join(DIRECTORY_SEPARATOR, array($dest_upload_dir, basename($_FILES[$filekey]['name'])));
+
+        if (move_uploaded_file($_FILES[$filekey]['tmp_name'], $uploadfile)) {
+            if ($fileNameWithoutExt === null) {
+                $basename = basename($_FILES[$filekey]['name']);
+            } else {
+                $basename = self::rename_file(basename($_FILES[$filekey]['name']), $fileNameWithoutExt, $dest_upload_dir, $dest_upload_dir, $overwrite);
+            }
+            $result['code'] = 'ok';
+            $result['data'] = [
+                'upload_url' => join(DIRECTORY_SEPARATOR, array($base_upload_url, $destFolderRelativeToUploadDir)),
+                'upload_dir' => $dest_upload_dir,
+                'basename' => $basename,
+            ];
+            return $result;
+        } else {
+            $result["code"] = 'error';
+            $result['message'] = 'error move_uploaded_file';
+            return $result;
+        }
+    }
+
+    private static function _full_mkdir_p($destFolderRelativeToUploadDir)
+    {
+        if (!function_exists('wp_upload_dir')) {
+            return [
+                'code' => 'error',
+                'message' => 'wp_upload_dir non esiste'
+            ];
+        }
+        $upload_dir = \wp_upload_dir();
+        $base_upload_dir = $upload_dir['basedir'];
+        $base_upload_url = $upload_dir['baseurl'];
+
+        // DIR assoluta di destinazione
+        $dest_upload_dir = join(DIRECTORY_SEPARATOR, array($base_upload_dir, $destFolderRelativeToUploadDir));
+        if (!function_exists('wp_mkdir_p')) {
+            return [
+                'code' => 'error',
+                'message' => 'wp_mkdir_p non esiste'
+            ];
+        }
+        if (\wp_mkdir_p($dest_upload_dir) === true) {
+            // OK
+        } else {
+            return [
+                'code' => 'error',
+                'message' => $dest_upload_dir . " non esiste!",
+            ];
+        }
+        return [
+            'code' => 'ok',
+            'dest_upload_dir' => $dest_upload_dir,
+            'base_upload_dir' => $base_upload_dir,
+            'base_upload_url' => $base_upload_url,
+        ];
+    }
     public static function fineuploader($fileNameWithoutExt = null, $destFolderRelativeToUploadDir = "files", $overwrite = true, $allowedExtensions = array())
     {
         // Include the upload handler class
@@ -20,29 +91,23 @@ class upload
 
             // Specify the input name set in the javascript.
             $uploader->inputName = "qqfile"; // matches Fine Uploader's default inputName value by default
-            if (!function_exists('wp_upload_dir')) return 'wp_upload_dir non esiste';
-            $upload_dir = \wp_upload_dir();
-            $base_upload_dir = $upload_dir['basedir'];
-            $base_upload_url = $upload_dir['baseurl'];
 
-            // DIR assoluta di destinazione
-            $dest_upload_dir = join(DIRECTORY_SEPARATOR, array($base_upload_dir, $destFolderRelativeToUploadDir));
-            if (!function_exists('wp_mkdir_p')) return 'wp_mkdir_p non esiste';
-            if (\wp_mkdir_p($dest_upload_dir) === true) {
-                // OK
+            $_full_mkdir_p_resp = self::_full_mkdir_p($destFolderRelativeToUploadDir);
+            if ($_full_mkdir_p_resp['code'] == 'error') {
+                $result["error"] = $_full_mkdir_p_resp['message'];
+                return $result;
             } else {
-                $result["error"] = $dest_upload_dir . " non esiste!";
+                $dest_upload_dir = $_full_mkdir_p_resp['dest_upload_dir'];
+                $base_upload_dir = $_full_mkdir_p_resp['base_upload_dir'];
+                $base_upload_url = $_full_mkdir_p_resp['base_upload_url'];
             }
 
-            // DIR assoluta chunks
             $uploader->chunksFolder = join(DIRECTORY_SEPARATOR, array($base_upload_dir, "chunks"));
-            if (!file_exists($uploader->chunksFolder)) {
-                if (!function_exists('wp_mkdir_p')) return 'wp_mkdir_p non esiste';
-                if (\wp_mkdir_p($uploader->chunksFolder) === true) {
-                    // OK
-                } else {
-                    $result["error"] = $uploader->chunksFolder . " non esiste!";
-                }
+
+            $_full_mkdir_p_resp = self::_full_mkdir_p($uploader->chunksFolder);
+            if ($_full_mkdir_p_resp['code'] == 'error') {
+                $result["error"] = $_full_mkdir_p_resp['message'];
+                return $result;
             }
 
             $method = $_SERVER["REQUEST_METHOD"];
@@ -68,7 +133,8 @@ class upload
                 // FAB sposta e rinomina file
                 if (is_file(join(DIRECTORY_SEPARATOR, array($base_upload_dir, $result["uuid"], $result["uploadName"])))) {
 
-                    if ($dest_upload_dir === null && $fileNameWithoutExt === null) { } else {
+                    if ($dest_upload_dir === null && $fileNameWithoutExt === null) {
+                    } else {
                         $currentPath = join(DIRECTORY_SEPARATOR, array($base_upload_dir, $result["uuid"]));
                         if ($dest_upload_dir === null) {
                             // catella di dest uguale a quella di origine
@@ -195,7 +261,8 @@ class upload
                 // FAB sposta e rinomina file
                 if (is_file(join(DIRECTORY_SEPARATOR, array($baseFolderPath, $result["uuid"], $result["uploadName"])))) {
 
-                    if ($destFolderPath === null && $fileNameWithoutExt === null) { } else {
+                    if ($destFolderPath === null && $fileNameWithoutExt === null) {
+                    } else {
                         $currentPath = join(DIRECTORY_SEPARATOR, array($baseFolderPath, $result["uuid"]));
                         if ($destFolderPath === null) {
                             // catella di dest uguale a quella di origine
