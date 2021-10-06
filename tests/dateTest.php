@@ -145,4 +145,20 @@ final class dateTest extends TestCase
             date::date_to_ita('2021/01/12 7:03')
         );
     }
+
+    public function test_date_to_ita_with_time_only_date(): void
+    {
+        $this->assertEquals(
+            '12-01-2021',
+            date::date_to_ita('2021/01/12 7:03', true)
+        );
+    }
+
+    public function test_date_ita_to_ita_with_time_only_date(): void
+    {
+        $this->assertEquals(
+            '12-01-2021',
+            date::date_to_ita('12/01/2021 7:03', true)
+        );
+    }
 }
