@@ -106,12 +106,14 @@ class functions
     public static function arraymulti_to_keys($array, $key = 'id')
     {
         $ret = array();
-        foreach ($array as $row) {
-            if (isset($row[$key])) {
-                $ret[] = $row[$key];
-            } else {
-                echo "ERROR arraymulti_to_keys: " . $key . '<br />';
-                self::print_r($array) . '<br />';
+        if (is_array($array)) {
+            foreach ($array as $row) {
+                if (isset($row[$key])) {
+                    $ret[] = $row[$key];
+                } else {
+                    //echo "ERROR arraymulti_to_keys: " . $key . '<br />';
+                    //self::print_r($array) . '<br />';
+                }
             }
         }
         return $ret;

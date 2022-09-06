@@ -105,12 +105,15 @@ final class functionsTest extends TestCase
     public function test_arraymulti_to_keys()
     {
         $params = [
-            ['key' => 1],
-            ['key' => 2],
-            ['key' => 3]
+            ['a' => 1],
+            ['a' => 2],
+            ['a' => 3],
+            ['k' => 11],
+            ['k' => 21],
+            ['k' => 31],
         ];
         $expected = [1, 2, 3];
-        $result = functions::arraymulti_to_keys($params, 'key');
+        $result = functions::arraymulti_to_keys($params, 'a');
 
         $this->assertEquals(
             $expected,

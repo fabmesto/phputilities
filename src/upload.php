@@ -148,6 +148,7 @@ class upload
                                 // elimina la cartella originale
                                 rmdir(join(DIRECTORY_SEPARATOR, array($base_upload_dir, $result["uuid"])));
                             }
+                            $result["original_filename"] = $result["uploadName"];
                             $result["uploadName"] = $fileNameWithExt;
                             $result["dir_url"] = join(DIRECTORY_SEPARATOR, array($base_upload_url, $destFolderRelativeToUploadDir));
                             $result["dir_path"] = join(DIRECTORY_SEPARATOR, array($base_upload_dir, $destFolderRelativeToUploadDir));
