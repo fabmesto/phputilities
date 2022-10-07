@@ -132,7 +132,10 @@ class UploadHandler
         if (!isset($type)) {
             return array('error' => "No files were uploaded.");
         } else if (strpos(strtolower($type), 'multipart/') !== 0) {
-            return array('error' => "Server error. Not a multipart request. Please set forceMultipart to default value (true).");
+            return array(
+                'error' => "Server error. Not a multipart request. Please set forceMultipart to default value (true).",
+                'HTTP_CONTENT_TYPE' => $type,
+            );
         }
 
         // Get size and name

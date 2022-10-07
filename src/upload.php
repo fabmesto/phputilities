@@ -125,7 +125,9 @@ class upload
                 else {
                     // Call handleUpload() with the name of the folder, relative to PHP's getcwd()
                     $result = $uploader->handleUpload($base_upload_dir);
-
+                    if (isset($result['error'])) {
+                        return $result;
+                    }
                     // To return a name used for uploaded file you can use the following line.
                     $result["uploadName"] = $uploader->getUploadName();
                 }
