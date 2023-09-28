@@ -148,7 +148,7 @@ class upload
                         if ($fileNameWithExt) {
                             if ($dest_upload_dir != $currentPath) {
                                 // elimina la cartella originale
-                                rmdir(join(DIRECTORY_SEPARATOR, array($base_upload_dir, $result["uuid"])));
+                                self::delete_directory_not_empty(join(DIRECTORY_SEPARATOR, array($base_upload_dir, $result["uuid"])));
                             }
                             $result["original_filename"] = $result["uploadName"];
                             $result["uploadName"] = $fileNameWithExt;
@@ -309,7 +309,7 @@ class upload
                             rename($old, $new);
                             if ($destFolderPath != $currentPath) {
                                 // elimina la cartella originale
-                                rmdir(join(DIRECTORY_SEPARATOR, array($baseFolderPath, $result["uuid"])));
+                                self::delete_directory_not_empty(join(DIRECTORY_SEPARATOR, array($baseFolderPath, $result["uuid"])));
                             }
                             $result["uploadName"] = $fileNameWithExt;
                             $result["folder"] = $destFolderPath;
@@ -332,5 +332,28 @@ class upload
         } else {
             return 'Classe non trovata in ' . dirname(__FILE__) . '/fineuploader/UploadHandler.php';
         }
+    }
+
+    public static function delete_directory_not_empty($dir) {
+        if (!file_exists($dir)) {
+            return true;
+        }
+    
+        if (!is_dir($dir)) {
+            return unlink($dir);
+        }
+    
+        foreach (scandir($dir) as $item) {
+            if ($item == '.' || $item == '..') {
+                continue;
+            }
+    
+            if (!self::delete_directory_not_empty($dir . DIRECTORY_SEPARATOR . $item)) {
+                return false;
+            }
+    
+        }
+    
+        return rmdir($dir);
     }
 }
