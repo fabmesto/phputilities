@@ -288,6 +288,7 @@ class functions
         if ($show_html) {
             $ret .= '<div class="fab-col-details" onclick="jQuery(this).toggleClass(\'fab-col-details\')">';
         }
+        $sep_not_show_html = '';
         foreach ($value as $key => $row) {
             if (is_array($row)) {
 
@@ -306,7 +307,8 @@ class functions
                 if ($show_html) {
                     $ret .= '<div><b>' .  self::clean_col_name($key)  . '</b>: ' . self::clean_col_value($name, $row) . '</div>';
                 } else {
-                    $ret .= self::clean_col_value($name, $row);
+                    $ret .= $sep_not_show_html . self::clean_col_value($name, $row);
+                    $sep_not_show_html = ' | ';
                 }
             }
         }
@@ -343,6 +345,7 @@ class functions
             $row = 0;
             if (($handle = fopen($filename, "r")) !== false) {
                 while (($data = fgetcsv($handle, 0, $sep)) !== false) {
+
                     $num = count($data);
 
                     for ($c = 0; $c < $num; $c++) {
