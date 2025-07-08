@@ -3,7 +3,7 @@
 [![CI](https://github.com/fabmesto/phputilities/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/fabmesto/phputilities/actions)
 [![Latest Release](https://img.shields.io/github/v/release/fabmesto/phputilities)](https://github.com/fabmesto/phputilities/releases)
 [![Packagist](https://img.shields.io/packagist/v/fabmesto/phputilities)](https://packagist.org/packages/fabmesto/phputilities)
-[![License](https://img.shields.io/github/license/fabmesto/phputilities)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **PHPUtilities** è una collezione di funzioni utili per lo sviluppo PHP quotidiano: date, array, CSV, querystring e altro ancora.
 
