@@ -338,7 +338,7 @@ class functions
         return \fab\date::nice_date($datetime, $full);
     }
 
-    public static function csv_to_array($filename, $map = array(), $sep = ";")
+    public static function csv_to_array($filename, $map = array(), $sep = ";", $index_header = 0)
     {
         $array = array();
         if (file_exists($filename)) {
@@ -353,7 +353,7 @@ class functions
                             $map[$c] = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $map[$c]);
                             $array[$row][$map[$c]] = $data[$c];
                         } else {
-                            if ($row == 0) {
+                            if ($row == $index_header) {
                                 $data[$c] = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $data[$c]);
                                 $map[$c] = str_replace(PHP_EOL, '', $data[$c]);
                             }

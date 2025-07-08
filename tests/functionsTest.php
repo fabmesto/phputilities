@@ -2,192 +2,116 @@
 
 declare(strict_types=1);
 
-use \PHPUnit\Framework\TestCase;
-use \fab\functions;
+use PHPUnit\Framework\TestCase;
+use fab\functions;
 
-final class functionsTest extends TestCase
+final class FunctionsTest extends TestCase
 {
-
     public function testCanBeCreated(): void
     {
-        $this->assertInstanceOf(
-            functions::class,
-            new functions
-        );
+        $this->assertInstanceOf(functions::class, new functions);
     }
-    /*
-    public function testCannotBeCreatedFromInvalidEmailAddress(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
 
-        date::is_zero_date('10-10-2020');
-    }
-    */
-    public function test_params_from_get(): void
+    public function testParamsFromGet(): void
     {
-        $_GET['key1'] = 'a';
-        $_GET['key2'] = 'b';
+        $_GET = ['key1' => 'a', 'key2' => 'b'];
         $params = ['key1' => 1, 'key2' => 2, 'key3' => 3];
-        $this->assertEquals(
-            ['key1' => 'a', 'key2' => 'b', 'key3' => 3],
-            functions::params_from_get($params)
-        );
-        unset($_GET);
+
+        $expected = ['key1' => 'a', 'key2' => 'b', 'key3' => 3];
+        $this->assertEquals($expected, functions::params_from_get($params));
     }
 
-    public function test_params_from_post(): void
+    public function testParamsFromPost(): void
     {
-        $_POST['key1'] = 'aa';
-        $_POST['key2'] = 'bb';
+        $_POST = ['key1' => 'aa', 'key2' => 'bb'];
         $params = ['key1' => 1, 'key2' => 2, 'key3' => 3];
-        $this->assertEquals(
-            ['key1' => 'aa', 'key2' => 'bb', 'key3' => 3],
-            functions::params_from_post($params)
-        );
-        unset($_POST);
+
+        $expected = ['key1' => 'aa', 'key2' => 'bb', 'key3' => 3];
+        $this->assertEquals($expected, functions::params_from_post($params));
     }
 
-    public function test_arraymulti_to_keys_values(): void
+    public function testArraymultiToKeysValues(): void
     {
-        $params = [
-            ['key' => 0, 'text' => 'testo 0', 'other' => 'other'],
-            ['key' => 1, 'text' => 'testo 1', 'other' => 'other']
+        $input = [
+            ['key' => 0, 'text' => 'testo 0'],
+            ['key' => 1, 'text' => 'testo 1'],
         ];
         $expected = [0 => 'testo 0', 1 => 'testo 1'];
 
-        $result = functions::arraymulti_to_keys_values($params, 'key', 'text');
-
-        $this->assertEquals(
-            $expected,
-            $result
-        );
+        $this->assertEquals($expected, functions::arraymulti_to_keys_values($input, 'key', 'text'));
     }
 
-    public function test_arraymulti_to_keys_values_group(): void
+    public function testArraymultiToKeysValuesGroup(): void
     {
-        $params = [
+        $input = [
             [
                 'group' => [
-                    ['key' => 0, 'text' => 'testo 0', 'other' => 'other'],
-                    ['key' => 1, 'text' => 'testo 1', 'other' => 'other']
+                    ['key' => 0, 'text' => 'testo 0'],
+                    ['key' => 1, 'text' => 'testo 1']
                 ],
                 'g_name' => 'gruppo 1',
             ],
             [
                 'group' => [
-                    ['key' => 2, 'text' => 'testo 2', 'other' => 'other'],
-                    ['key' => 3, 'text' => 'testo 3', 'other' => 'other']
+                    ['key' => 2, 'text' => 'testo 2'],
+                    ['key' => 3, 'text' => 'testo 3']
                 ],
                 'g_name' => 'gruppo 2',
             ]
         ];
         $expected = [
-            'gruppo 1' => [
-
-                0 => 'testo 0',
-                1 => 'testo 1',
-            ],
-            'gruppo 2' => [
-
-                2 => 'testo 2',
-                3 => 'testo 3',
-            ],
+            'gruppo 1' => [0 => 'testo 0', 1 => 'testo 1'],
+            'gruppo 2' => [2 => 'testo 2', 3 => 'testo 3'],
         ];
 
-        $result = functions::arraymulti_to_keys_values_group($params, 'group', 'g_name', 'key', 'text');
-
-        $this->assertEquals(
-            $expected,
-            $result
-        );
+        $this->assertEquals($expected, functions::arraymulti_to_keys_values_group($input, 'group', 'g_name', 'key', 'text'));
     }
 
-    public function test_arraymulti_to_keys()
+    public function testArraymultiToKeys(): void
     {
-        $params = [
+        $input = [
             ['a' => 1],
             ['a' => 2],
             ['a' => 3],
             ['k' => 11],
-            ['k' => 21],
-            ['k' => 31],
         ];
         $expected = [1, 2, 3];
-        $result = functions::arraymulti_to_keys($params, 'a');
 
-        $this->assertEquals(
-            $expected,
-            $result
-        );
+        $this->assertEquals($expected, functions::arraymulti_to_keys($input, 'a'));
     }
 
-    public function test_get_in_query_string()
+    public function testGetInQueryString(): void
     {
+        $_GET = ['a' => 1, 'b' => 2, 'c' => 3, 'd' => 4];
+        $excluded = ['a', 'b'];
         $expected = 'c=3&d=4&';
 
-        $params = ['a', 'b'];
-        $_GET['a'] = 1;
-        $_GET['b'] = 2;
-        $_GET['c'] = 3;
-        $_GET['d'] = 4;
-        $result = functions::get_in_query_string($params);
-
-        $this->assertEquals(
-            $expected,
-            $result
-        );
+        $this->assertEquals($expected, functions::get_in_query_string($excluded));
     }
 
-    public function test_split_comune_provincia()
+    public function testSplitComuneProvincia(): void
     {
-        $comune = 'Bari';
-        $provincia = 'Ba';
-        $expected = ['comune' => $comune, 'provincia' => $provincia];
-        $params = $comune . " (" . $provincia . ")";
-        $result = functions::split_comune_provincia($params);
+        $input = 'Bari (Ba)';
+        $expected = ['comune' => 'Bari', 'provincia' => 'Ba'];
 
-        $this->assertEquals(
-            $expected,
-            $result
-        );
+        $this->assertEquals($expected, functions::split_comune_provincia($input));
     }
 
-    public function test_value_by_key()
+    public function testValueByKey(): void
     {
         $array = ['a' => 1, 'b' => 2];
-        $key = 'b';
-        $result = functions::value_by_key($array, $key);
-        $this->assertEquals(
-            2,
-            $result
-        );
+        $this->assertEquals(2, functions::value_by_key($array, 'b'));
     }
 
-    public function test_csv_to_array()
+    public function testCsvToArray(): void
     {
-        $filepath = dirname(__FILE__) . '/assets/test.csv';
-        $result = functions::csv_to_array($filepath, [], ',');
-
+        $filepath = __DIR__ . '/assets/test.csv';
         $expected = [
-            1 => [
-                'id' => '1',
-                'nome' => 'nico',
-                'cognome' => 'rossi'
-            ],
-            2 => [
-                'id' => '2',
-                'nome' => 'fra',
-                'cognome' => 'bianchi'
-            ],
-            3 => [
-                'id' => '3',
-                'nome' => 'fab',
-                'cognome' => 'verdi'
-            ],
+            1 => ['id' => '1', 'nome' => 'nico', 'cognome' => 'rossi'],
+            2 => ['id' => '2', 'nome' => 'fra', 'cognome' => 'bianchi'],
+            3 => ['id' => '3', 'nome' => 'fab', 'cognome' => 'verdi'],
         ];
-        $this->assertEquals(
-            $expected,
-            $result
-        );
+
+        $this->assertEquals($expected, functions::csv_to_array($filepath, [], ','));
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "fabmesto/phputilities",
-    "description": "php utilities",
+    "description": "PHP utilities",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -9,9 +9,8 @@
             "email": "fabmesto@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=7.1"
     },
     "autoload": {
         "psr-4": {
@@ -19,6 +18,11 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^7"
-    }
+        "phpunit/phpunit": "^9.6"
+    },
+    "scripts": {
+        "test": "phpunit --configuration phpunit.xml.dist"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
