@@ -1,4 +1,4 @@
-name: Run PHPUnit tests
+name: CI
 
 on:
   push:
@@ -8,25 +8,28 @@ on:
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    strategy:
+      matrix:
+        php-version: ['8.2']
 
-      - name: Set up PHP
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.2
-          extensions: mbstring, intl, pdo, pdo_mysql
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, dom, json
           coverage: none
 
-      - name: Validate composer.json
-        run: composer validate
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
-      - name: Run PHPUnit
-        run: composer test
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit --configuration phpunit.xml.dist
