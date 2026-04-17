@@ -11,7 +11,7 @@ class adminlte
         $html .= '
                 <h2 class="page-header clearfix">
                 ' . $icon . ' ' . $title . '
-                <small ' . ($right ? 'class="pull-right"' : '') . '>' . $description . '</small>
+                <small ' . ($right ? 'class="float-right"' : '') . '>' . $description . '</small>
                 </h2>
             ';
         return $html;
@@ -40,17 +40,17 @@ class adminlte
             $footer_class = $classes['footer'];
         }
         $html .= '
-            <div class="box ' . $main_class . '">
-                <div class="box-header ' . $header_class . '">
+            <div class="card ' . $main_class . '">
+                <div class="card-header ' . $header_class . '">
                 ' . $header_html . '
                 </div>
-                <div class="box-body ' . $body_class . '">
+                <div class="card-body ' . $body_class . '">
                 ' . $body_html . '
                 </div>
                 ';
         if ($footer_html != '') {
             $html .= '
-                <div class="box-footer ' . $footer_class . '">
+                <div class="card-footer ' . $footer_class . '">
                 ' . $footer_html . '
                 </div>';
         }
@@ -131,8 +131,8 @@ class adminlte
         $html .= '
                 <div class="direct-chat-msg ' . ($right ? 'right' : '') . '">
                   <div class="direct-chat-info clearfix">
-                    <span class="direct-chat-name pull-left">' . $username . '</span>
-                    <span class="direct-chat-timestamp pull-right">' . $date . '</span>
+                    <span class="direct-chat-name float-left">' . $username . '</span>
+                    <span class="direct-chat-timestamp float-right">' . $date . '</span>
                   </div>
                   <!-- /.direct-chat-info -->
                   <img class="direct-chat-img" src="' . $url_avatar_img . '" alt="' . $username . '"><!-- /.direct-chat-img -->
@@ -182,18 +182,18 @@ class adminlte
     public static function box_tools($html_buttons = '', $collapse = false, $remove = false)
     {
         $html = '';
-        $html .= '<div class="box-tools">';
+        $html .= '<div class="card-tools">';
         $html .= $html_buttons;
         if ($collapse) {
             $html .= '
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                    <i class="fa fa-minus"></i>
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
                     </button>';
         }
         if ($remove) {
             $html .= '
-                    <button type="button" class="btn btn-box-tool" data-widget="remove">
-                    <i class="fa fa-times"></i>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
                     </button>';
         }
         $html .= '</div>';
@@ -217,7 +217,7 @@ class adminlte
         if ($url_text != '') {
             $html .= '
                 <a href="' . $url . '" class="small-box-footer">
-                    ' . $url_text . ' <i class="fa fa-arrow-circle-right"></i>
+                    ' . $url_text . ' <i class="fas fa-arrow-circle-right"></i>
                 </a>';
         }
         $html .= '</div>';
@@ -235,7 +235,7 @@ class adminlte
                 <div class="comment-text">
                       <span class="username">
                       ' . $username . '
-                        <span class="text-muted pull-right">' . $date . '</span>
+                        <span class="text-muted float-right">' . $date . '</span>
                       </span><!-- /.username -->
                  ' . $comment_text . '
                 </div>
@@ -249,7 +249,7 @@ class adminlte
     {
         $html = '';
         $html .= '
-            <div class="box box-widget widget-user">
+            <div class="card card-widget widget-user">
                 <div class="widget-user-header ' . $bg_color . '">
                     <h3 class="widget-user-username">' . $username . '</h3>
                     <h5 class="widget-user-desc">' . $description . '</h5>
@@ -257,7 +257,7 @@ class adminlte
                 <div class="widget-user-image">
                     <img class="img-circle" src="' . $url_avatar_img . '" alt="' . $username . '">
                 </div>
-                <div class="box-footer">
+                <div class="card-footer">
                 ' . $html_footer . '
                 </div>
             </div>
@@ -269,7 +269,7 @@ class adminlte
     {
         $html = '';
         $html .= '
-                <div class="box box-widget widget-user-2">
+                <div class="card card-widget widget-user-2">
                     <!-- Add the bg color to the header using any of the bg-* classes -->
                     <div class="widget-user-header ' . $bg_color . '">
                         <div class="widget-user-image">
@@ -279,7 +279,7 @@ class adminlte
                         <h3 class="widget-user-username">' . $username . '</h3>
                         <h5 class="widget-user-desc">' . $description . '</h5>
                     </div>
-                    <div class="box-footer">
+                    <div class="card-footer">
                     ' . $html_footer . '
                     </div>
                 </div>

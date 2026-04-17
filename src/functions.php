@@ -344,7 +344,7 @@ class functions
         if (file_exists($filename)) {
             $row = 0;
             if (($handle = fopen($filename, "r")) !== false) {
-                while (($data = fgetcsv($handle, 0, $sep)) !== false) {
+                while (($data = fgetcsv($handle, 0, $sep, '"', '\\')) !== false) {
 
                     $num = count($data);
 
@@ -475,7 +475,7 @@ class functions
         $err = curl_errno($ch);
         $errmsg = curl_error($ch);
         $header = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-        curl_close($ch);
+        $ch = null;
         /*
             $header['errno']   = $err;
             $header['errmsg']  = $errmsg;
@@ -521,11 +521,21 @@ class functions
         return in_array(strtolower($extension), $extensions_image);
     }
 
+    public static function debug_log($data, $prefix = 'FAB')
+    {
+        $message = is_scalar($data) ? strval($data) : json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if ($message === false) {
+            $message = 'Unable to encode log payload';
+        }
+        error_log('[' . $prefix . '] ' . $message);
+    }
+
+    /**
+     * @deprecated Use \fab\functions::debug_log() instead.
+     */
     public static function console_log($data)
     {
-        echo '<script>';
-        echo 'console.log(' . json_encode($data) . ')';
-        echo '</script>';
+        self::debug_log($data, 'DEPRECATED console_log');
     }
 
     public static function html_environment_variable()

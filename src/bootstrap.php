@@ -41,15 +41,15 @@ class bootstrap
     {
         $html = '';
         if (is_array($values) && count($values) > 0) {
-            $html .= '<div class="form-group ' . ($errors != '' ? 'is-invalid has-error' : '') . '">';
+            $html .= '<div class="form-group-check ' . ($errors != '' ? 'is-invalid has-error' : '') . '">';
+            if ($label != '') $html .= '<label>' . $label . '</label>';
             foreach ($values as $value => $text) {
-                $html .= '
-                    <input type="hidden" name="' . $input . '[' . $value . ']" value="0" />
-                    <div class="checkbox ' . $classes . '">
-                        <label>
-                            <input type="checkbox" name="' . $input . '[' . $value . ']" value="' . $value . '" ' . (in_array($value, $sels) ? 'checked' : '') . '> ' . $text . '
-                        </label>
-                    </div>';
+                $id = 'check_' . preg_replace('/[^A-Za-z0-9_-]/', '_', strval($value));
+                $html .= '<div class="form-check ' . $classes . '">';
+                $html .= '<input type="hidden" name="' . $input . '[' . $value . ']" value="0" />';
+                $html .= '<input class="form-check-input" id="' . $id . '" type="checkbox" name="' . $input . '[' . $value . ']" value="' . $value . '" ' . (in_array($value, $sels) ? 'checked' : '') . '>';
+                $html .= '<label class="form-check-label" for="' . $id . '">' . $text . '</label>';
+                $html .= '</div>';
             }
             if ($errors != '') $html .= '<div class="invalid-feedback help-block">' . $errors . '</div>';
             $html .= '</div>';
