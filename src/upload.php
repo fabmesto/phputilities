@@ -42,6 +42,13 @@ class upload
 
     private static function _full_mkdir_p($destFolderRelativeToUploadDir)
     {
+        $destFolderRelativeToUploadDir = self::_normalize_relative_upload_path($destFolderRelativeToUploadDir);
+        if ($destFolderRelativeToUploadDir === false) {
+            return [
+                'code' => 'error',
+                'message' => 'Percorso upload non valido'
+            ];
+        }
         if (!function_exists('wp_upload_dir')) {
             return [
                 'code' => 'error',
@@ -73,7 +80,36 @@ class upload
             'dest_upload_dir' => $dest_upload_dir,
             'base_upload_dir' => $base_upload_dir,
             'base_upload_url' => $base_upload_url,
+            'relative_upload_dir' => $destFolderRelativeToUploadDir,
         ];
+    }
+
+    private static function _normalize_relative_upload_path($path)
+    {
+        if (!is_scalar($path)) {
+            return false;
+        }
+
+        $path = trim(str_replace('\\', '/', (string) $path));
+        if ($path === '') {
+            return '';
+        }
+        if (strpos($path, "\0") !== false || strpos($path, '/') === 0 || preg_match('/^[A-Za-z]:\//', $path)) {
+            return false;
+        }
+
+        $segments = array();
+        foreach (explode('/', $path) as $segment) {
+            if ($segment === '') {
+                continue;
+            }
+            if ($segment === '.' || $segment === '..') {
+                return false;
+            }
+            $segments[] = $segment;
+        }
+
+        return implode(DIRECTORY_SEPARATOR, $segments);
     }
     public static function fineuploader($fileNameWithoutExt = null, $destFolderRelativeToUploadDir = "files", $overwrite = true, $allowedExtensions = array())
     {
@@ -100,15 +136,15 @@ class upload
                 $dest_upload_dir = $_full_mkdir_p_resp['dest_upload_dir'];
                 $base_upload_dir = $_full_mkdir_p_resp['base_upload_dir'];
                 $base_upload_url = $_full_mkdir_p_resp['base_upload_url'];
+                $destFolderRelativeToUploadDir = $_full_mkdir_p_resp['relative_upload_dir'];
             }
 
-            $uploader->chunksFolder = join(DIRECTORY_SEPARATOR, array($base_upload_dir, "chunks"));
-
-            $_full_mkdir_p_resp = self::_full_mkdir_p($uploader->chunksFolder);
+            $_full_mkdir_p_resp = self::_full_mkdir_p("chunks");
             if ($_full_mkdir_p_resp['code'] == 'error') {
                 $result["error"] = $_full_mkdir_p_resp['message'];
                 return $result;
             }
+            $uploader->chunksFolder = $_full_mkdir_p_resp['dest_upload_dir'];
 
             $method = $_SERVER["REQUEST_METHOD"];
             if ($method == "POST") {
@@ -132,6 +168,13 @@ class upload
                     $result["uploadName"] = $uploader->getUploadName();
                 }
 
+                if (isset($result['error'])) {
+                    return $result;
+                }
+                if (!isset($result['uuid']) || !is_scalar($result['uuid']) || preg_match('/^[A-Za-z0-9_-]{1,128}$/', (string) $result['uuid']) !== 1) {
+                    return array('error' => 'Invalid or missing upload UUID.', 'preventRetry' => true);
+                }
+
                 // FAB sposta e rinomina file
                 if (is_file(join(DIRECTORY_SEPARATOR, array($base_upload_dir, $result["uuid"], $result["uploadName"])))) {
 
@@ -148,7 +191,7 @@ class upload
                         if ($fileNameWithExt) {
                             if ($dest_upload_dir != $currentPath) {
                                 // elimina la cartella originale
-                                self::delete_directory_not_empty(join(DIRECTORY_SEPARATOR, array($base_upload_dir, $result["uuid"])));
+                                self::delete_directory_not_empty(join(DIRECTORY_SEPARATOR, array($base_upload_dir, $result["uuid"])), $base_upload_dir);
                             }
                             $result["original_filename"] = $result["uploadName"];
                             $result["uploadName"] = $fileNameWithExt;
@@ -181,6 +224,9 @@ class upload
 
     public static function rename_file($oldFileName, $newFileNameWithoutExt, $dirOriginPath, $dirDestPath, $overwrite = true)
     {
+        if (!self::_is_safe_file_name($oldFileName)) {
+            return false;
+        }
         if ($newFileNameWithoutExt === null) {
             // nome originale del file
             $fileNameWithExt = $oldFileName;
@@ -191,6 +237,9 @@ class upload
         }
         if (!function_exists('sanitize_file_name')) return 'sanitize_file_name non esiste';
         $fileNameWithExt = \sanitize_file_name($fileNameWithExt);
+        if (!self::_is_safe_file_name($fileNameWithExt)) {
+            return false;
+        }
         if (is_dir($dirDestPath)) {
             $old = join(DIRECTORY_SEPARATOR, array($dirOriginPath, $oldFileName));
             $new = join(DIRECTORY_SEPARATOR, array($dirDestPath, $fileNameWithExt));
@@ -198,10 +247,24 @@ class upload
                 $fileNameWithExt = self::get_unique_filename($fileNameWithExt, $dirDestPath);
                 $new = join(DIRECTORY_SEPARATOR, array($dirDestPath, $fileNameWithExt));
             }
-            rename($old, $new);
-            return $fileNameWithExt;
+            if (is_file($old) && @rename($old, $new) && is_file($new)) {
+                return $fileNameWithExt;
+            }
         }
         return false;
+    }
+
+    private static function _is_safe_file_name($fileName)
+    {
+        if (!is_scalar($fileName)) {
+            return false;
+        }
+
+        $fileName = (string) $fileName;
+        return $fileName !== '' && $fileName !== '.' && $fileName !== '..'
+            && strpos($fileName, "\0") === false
+            && strpos($fileName, '/') === false
+            && strpos($fileName, '\\') === false;
     }
 
 
@@ -261,6 +324,13 @@ class upload
                     $result["uploadName"] = $uploader->getUploadName();
                 }
 
+                if (isset($result['error'])) {
+                    return $result;
+                }
+                if (!isset($result['uuid']) || !is_scalar($result['uuid']) || preg_match('/^[A-Za-z0-9_-]{1,128}$/', (string) $result['uuid']) !== 1) {
+                    return array('error' => 'Invalid or missing upload UUID.', 'preventRetry' => true);
+                }
+
                 // FAB sposta e rinomina file
                 if (is_file(join(DIRECTORY_SEPARATOR, array($baseFolderPath, $result["uuid"], $result["uploadName"])))) {
 
@@ -306,13 +376,16 @@ class upload
                                 }
                             }
                             // sposta il file nella cartella di dest rinominandolo
-                            rename($old, $new);
-                            if ($destFolderPath != $currentPath) {
-                                // elimina la cartella originale
-                                self::delete_directory_not_empty(join(DIRECTORY_SEPARATOR, array($baseFolderPath, $result["uuid"])));
+                            if (@rename($old, $new) && is_file($new)) {
+                                if ($destFolderPath != $currentPath) {
+                                    // elimina la cartella originale
+                                    self::delete_directory_not_empty(join(DIRECTORY_SEPARATOR, array($baseFolderPath, $result["uuid"])), $baseFolderPath);
+                                }
+                                $result["uploadName"] = $fileNameWithExt;
+                                $result["folder"] = $destFolderPath;
+                            } else {
+                                $result["error"] = 'Could not move uploaded file.';
                             }
-                            $result["uploadName"] = $fileNameWithExt;
-                            $result["folder"] = $destFolderPath;
                         } else {
                             $result["error"] = $destFolderPath . " non esiste!";
                         }
@@ -334,26 +407,44 @@ class upload
         }
     }
 
-    public static function delete_directory_not_empty($dir) {
+    public static function delete_directory_not_empty($dir, $allowedRoot = null) {
+        if ($allowedRoot === null && function_exists('wp_upload_dir')) {
+            $uploadDir = \wp_upload_dir();
+            $allowedRoot = isset($uploadDir['basedir']) ? $uploadDir['basedir'] : null;
+        }
+        if (!is_string($allowedRoot) || $allowedRoot === '') {
+            return false;
+        }
+
         if (!file_exists($dir)) {
             return true;
         }
-    
+
+        $rootPath = realpath($allowedRoot);
+        $targetPath = realpath($dir);
+        if ($rootPath === false || $targetPath === false) {
+            return false;
+        }
+        $rootPath = rtrim($rootPath, DIRECTORY_SEPARATOR);
+        if ($targetPath === $rootPath || strpos($targetPath, $rootPath . DIRECTORY_SEPARATOR) !== 0) {
+            return false;
+        }
+
         if (!is_dir($dir)) {
             return unlink($dir);
         }
-    
+
         foreach (scandir($dir) as $item) {
             if ($item == '.' || $item == '..') {
                 continue;
             }
-    
-            if (!self::delete_directory_not_empty($dir . DIRECTORY_SEPARATOR . $item)) {
+
+            if (!self::delete_directory_not_empty($dir . DIRECTORY_SEPARATOR . $item, $rootPath)) {
                 return false;
             }
-    
+
         }
-    
+
         return rmdir($dir);
     }
 }

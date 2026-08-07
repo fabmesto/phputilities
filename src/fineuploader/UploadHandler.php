@@ -54,9 +54,16 @@ class UploadHandler
 
     public function combineChunks($uploadDirectory, $name = null)
     {
-        $uuid = $_POST['qquuid'];
+        $uuid = $this->validatedUuid(isset($_POST['qquuid']) ? $_POST['qquuid'] : '');
+        if ($uuid === '') {
+            return array('error' => 'Invalid or missing upload UUID.', 'preventRetry' => true);
+        }
         if ($name === null) {
             $name = $this->getName();
+        }
+        $name = $this->validatedFileName($name);
+        if ($name === '') {
+            return array('error' => 'Invalid or missing file name.', 'preventRetry' => true);
         }
         $targetFolder = $this->chunksFolder . DIRECTORY_SEPARATOR . $uuid;
         $totalParts = isset($_REQUEST['qqtotalparts']) ? (int)$_REQUEST['qqtotalparts'] : 1;
@@ -149,6 +156,11 @@ class UploadHandler
             $name = $this->getName();
         }
 
+        $name = $this->validatedFileName($name);
+        if ($name === '') {
+            return array('error' => 'Invalid or missing file name.', 'preventRetry' => true);
+        }
+
         // check file error
         if ($file['error']) {
             return array('error' => 'Upload Error #' . $file['error']);
@@ -180,7 +192,10 @@ class UploadHandler
         // Save a chunk
         $totalParts = isset($_REQUEST['qqtotalparts']) ? (int)$_REQUEST['qqtotalparts'] : 1;
 
-        $uuid = $_REQUEST['qquuid'];
+        $uuid = $this->validatedUuid(isset($_REQUEST['qquuid']) ? $_REQUEST['qquuid'] : '');
+        if ($uuid === '') {
+            return array('error' => 'Invalid or missing upload UUID.', 'preventRetry' => true);
+        }
         if ($totalParts > 1) {
             # chunked upload
 
@@ -236,13 +251,20 @@ class UploadHandler
 
         $targetFolder = $uploadDirectory;
         $uuid = false;
+        $url = '';
         $method = $_SERVER["REQUEST_METHOD"];
         if ($method == "DELETE") {
             $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
             $tokens = explode('/', $url);
-            $uuid = $tokens[sizeof($tokens) - 1];
+            $uuid = $this->validatedUuid(rawurldecode($tokens[sizeof($tokens) - 1]));
+            if ($uuid === '') {
+                return array('success' => false, 'error' => 'Invalid or missing upload UUID.');
+            }
         } else if ($method == "POST") {
-            $uuid = $_REQUEST['qquuid'];
+            $uuid = $this->validatedUuid(isset($_REQUEST['qquuid']) ? $_REQUEST['qquuid'] : '');
+            if ($uuid === '') {
+                return array('success' => false, 'error' => 'Invalid or missing upload UUID.');
+            }
         } else {
             return array(
                 "success" => false,
@@ -262,6 +284,30 @@ class UploadHandler
                 "path" => $uuid
             );
         }
+    }
+
+    private function validatedUuid($uuid)
+    {
+        if (!is_scalar($uuid)) {
+            return '';
+        }
+
+        $uuid = (string) $uuid;
+        return preg_match('/^[A-Za-z0-9_-]{1,128}$/', $uuid) === 1 ? $uuid : '';
+    }
+
+    private function validatedFileName($name)
+    {
+        if (!is_scalar($name)) {
+            return '';
+        }
+
+        $name = (string) $name;
+        if ($name === '' || $name === '.' || $name === '..' || strpos($name, "\0") !== false) {
+            return '';
+        }
+
+        return strpos($name, '/') === false && strpos($name, '\\') === false ? $name : '';
     }
 
     /**
@@ -342,10 +388,11 @@ class UploadHandler
             if ($item == "." || $item == "..")
                 continue;
 
-            if (is_dir($item)) {
-                $this->removeDir($item);
+            $path = join(DIRECTORY_SEPARATOR, array($dir, $item));
+            if (is_dir($path) && !is_link($path)) {
+                $this->removeDir($path);
             } else {
-                unlink(join(DIRECTORY_SEPARATOR, array($dir, $item)));
+                unlink($path);
             }
         }
         rmdir($dir);
